@@ -4,13 +4,13 @@ import datetime
 from .entry import Entry
 
 class Journal(object):
+	version = "0.0.1"
 	def __init__(self, heading, datetime, description, authors, tags = [], need_storage = False):
 		self.heading = heading
 		self.authors = authors
 		self.description = description
 		self.datetime = datetime
 		self.need_storage = need_storage
-		self.version = "0.0.1"
 		self.timefmt = "%d.%m.%Y-%H:%M:%S"
 		self.entries = []
 		self.tags = tags
@@ -35,7 +35,7 @@ class Journal(object):
 		if(dct["type"] != "journal"):
 			raise Exception("dictionary does not describe a journal")
 		major, minor, release = dct["version"].split(".")
-		my_major, my_minor, my_release = self.version.split(".")
+		my_major, my_minor, my_release = Journal.version.split(".")
 
 		# FIXME: find a better way to calculate this:
 		major, minor, release = int(major), int(minor), int(release)
@@ -47,7 +47,7 @@ class Journal(object):
 			raise Exception("journal version ({}) is too high. Current version: ({})".format(dct["version"], self.version))
 
 		dtime = datetime.datetime.strptime(dct["datetime"], dct["timefmt"])
-		journal = Journal(dct["heading"], dtime, +
+		journal = Journal(dct["heading"], dtime,
 				dct["description"], 
 				dct["authors"], 
 				tags = dct["tags"],

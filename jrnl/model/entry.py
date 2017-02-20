@@ -1,28 +1,31 @@
 #!/usr/bin/python3
 
-import base64, os
+import base64, os, datetime
 from ..util.util import open_closing
 
 class Entry(object):
 	"""
 	A journal entry.
 	"""
-	def __init__(self, datetime, heading, text, tags = [], children = {}):
-		self.version = "0.0.1"
+	version = "0.0.1"
+	timefmt = "%d.%m.%Y-%H:%M:%S"
+	def __init__(self, datetime, heading, text, author = "", tags = [], children = {}):
+		self.author = author
 		self.datetime = datetime
 		self.heading = heading
 		self.text = text
 		self.children = children
-		self.timefmt = "%d.%m.%Y-%H:%M:%S"
+		self.timefmt = Entry.timefmt
 		self.tags = tags
 		self.has_unsaved = False
 	def to_dict(self):
-		return {"type": "entry", "version": self.version,
+		return {"type": "entry", "version": Entry.version,
 			"datetime": self.datetime.strftime(self.timefmt),
 			"timefmt": self.timefmt, 
 			"heading": self.heading,
 			"text": self.text,
 			"tags": self.tags,
+			"author": self.author,
 			"children": {k: v.to_dict() for k,v in self.children.items()}}
 	def add_child(self, child):
 		"""
@@ -44,7 +47,7 @@ class Entry(object):
 		if(dct["type"] != "entry"):
 			raise Exception("dictionary does not describe a entry")
 		major, minor, release = dct["version"].split(".")
-		my_major, my_minor, my_release = self.version.split(".")
+		my_major, my_minor, my_release = Entry.version.split(".")
 
 		# FIXME: find a better way to calculate this:
 		major, minor, release = int(major), int(minor), int(release)
@@ -56,27 +59,27 @@ class Entry(object):
 			raise Exception("entry version ({}) is too high. Current version: ({})".format(dct["version"], self.version))
 
 		dtime = datetime.datetime.strptime(dct["datetime"], dct["timefmt"])
-		children = {k: Child.from_dict(v) for k,v in dct["children"].items()}
+		children = {k: Child.from_dict(v) for k,v in dct["children"].items() if not v == None}
 
-		return Entry(dtime, dct["heading"], dct["text"], tags = dct["tags"], children = children)
+		return Entry(dtime, dct["heading"], dct["text"], author = dct["author"], tags = dct["tags"], children = children)
 		
-	
+
 class Child(object):
 	"""
 	The base child object
 	"""
+	version = "0.0.1"
+	subclasstypes = {}
 	def __init__(self, name, alttext, embed = True):
 		self.embed = embed
 		self.name = name
 		self.alttext = alttext
-		self.version = "0.0.1"
-		self.subclasstypes = {"filechild": FileChild, "renderchild": RenderChild}
 		self.unsaved = False
 	def to_dict(self):
 		"""
 		Convert this child to a dict object.
 		"""
-		return {"type": "child", "version": self.version, "name": self.name,
+		return {"type": "child", "version": Child.version, "name": self.name,
 			"embed": self.embed, "alttext": self.alttext}
 
 	def save(self, path):
@@ -101,11 +104,11 @@ class Child(object):
 		if(not "type" in dct):
 			raise Exception("malformed dictionary: no type field")
 		if(dct["type"] != "child" ):
-			if(not dct["type"] in self.subclasstypes):
+			if(not dct["type"] in Child.subclasstypes):
 				raise Exception("dictionary does not describe a child")
-			self.subclasstypes[dct["type"]].from_dict(dct)
+			Child.subclasstypes[dct["type"]].from_dict(dct)
 		major, minor, release = dct["version"].split(".")
-		my_major, my_minor, my_release = self.version.split(".")
+		my_major, my_minor, my_release = Child.version.split(".")
 
 		# FIXME: find a better way to calculate this:
 		major, minor, release = int(major), int(minor), int(release)
@@ -114,8 +117,9 @@ class Child(object):
 		version = major * 10000 + minor * 100 + release
 		my_version = my_major * 10000 + my_minor * 100 + my_release
 		if(version > my_version):
-			raise Exception("child version ({}) is too high. Current version: ({})".format(dct["version"], self.version))
+			raise Exception("child version ({}) is too high. Current version: ({})".format(dct["version"], Child.version))
 		return Child(dct["name"], dct["alttext"], embed = dct["embed"])
+	
 
 class FileChild(Child):
 	"""
@@ -133,14 +137,14 @@ class FileChild(Child):
 	def save(self, path):
 		"""
 		Save the file under the given path, if store_internal is False.
-		Will set self.filename to ``os.path.join(path, os.path.base_name(self.filename))``.
+		Will set self.filename to ``os.path.join(path, os.path.basename(self.filename))``.
 		"""
-		real_filename = os.path.base_name(self.filename)
+		real_filename = os.path.basename(self.filename)
 		path = os.path.join(path, real_filename)
 		if(path == self.filename):
 			return
 		with open_closing(path, "wb") as to:
-			with open_closing(self.filename, "rb") as from_:
+			with open_closing(os.path.expanduser(self.filename), "rb") as from_:
 				chunk_size = 10 ** 3
 				done = False
 				while(not done):
@@ -167,11 +171,11 @@ class FileChild(Child):
 		if(not "type" in dct):
 			raise Exception("malformed dictionary: no type field")
 		if(dct["type"] != "filechild" ):
-			if(not dct["type"] in self.subclasstypes):
+			if(not dct["type"] in FileChild.subclasstypes):
 				raise Exception("dictionary does not describe a child")
-			self.subclasstypes[dct["type"]].from_dict(dct)
+			FileChild.subclasstypes[dct["type"]].from_dict(dct)
 		major, minor, release = dct["version"].split(".")
-		my_major, my_minor, my_release = self.version.split(".")
+		my_major, my_minor, my_release = FileChild.version.split(".")
 
 		# FIXME: find a better way to calculate this:
 		major, minor, release = int(major), int(minor), int(release)
@@ -180,7 +184,7 @@ class FileChild(Child):
 		version = major * 10000 + minor * 100 + release
 		my_version = my_major * 10000 + my_minor * 100 + my_release
 		if(version > my_version):
-			raise Exception("child version ({}) is too high. Current version: ({})".format(dct["version"], self.version))
+			raise Exception("child version ({}) is too high. Current version: ({})".format(dct["version"], FileChild.version))
 
 		if(dct["store_internal"]):
 			f = open(dct["filename"], "wb")
@@ -191,9 +195,9 @@ class FileChild(Child):
 
 class RenderChild(Child):
 	"""
-	Used to embed rendered data (for insance LaTeX)
+	Used to embed rendered data (for instance LaTeX)
 	"""
-	def __init__(self, data, dtype, alttext, embed = True):
+	def __init__(self, data, dtype, name, alttext, embed = True):
 		Child.__init__(self, name, alttext, embed)
 		self.dtype = dtype
 		self.data = data
@@ -207,11 +211,11 @@ class RenderChild(Child):
 		if(not "type" in dct):
 			raise Exception("malformed dictionary: no type field")
 		if(dct["type"] != "renderchild" ):
-			if(not dct["type"] in self.subclasstypes):
+			if(not dct["type"] in RenderChild.subclasstypes):
 				raise Exception("dictionary does not describe a child")
-			self.subclasstypes[dct["type"]].from_dict(dct)
+			RenderChild.subclasstypes[dct["type"]].from_dict(dct)
 		major, minor, release = dct["version"].split(".")
-		my_major, my_minor, my_release = self.version.split(".")
+		my_major, my_minor, my_release = RenderChild.version.split(".")
 
 		# FIXME: find a better way to calculate this:
 		major, minor, release = int(major), int(minor), int(release)
@@ -220,10 +224,10 @@ class RenderChild(Child):
 		version = major * 10000 + minor * 100 + release
 		my_version = my_major * 10000 + my_minor * 100 + my_release
 		if(version > my_version):
-			raise Exception("child version ({}) is too high. Current version: ({})".format(dct["version"], self.version))
+			raise Exception("child version ({}) is too high. Current version: ({})".format(dct["version"], RenderChild.version))
 
 
 		return RenderChild(dct["data"], dct["dtype"], dct["name"], dct["alttext"], embed = dct["embed"])
 
-
+Child.subclasstypes = {"filechild": FileChild, "renderchild": RenderChild}
 

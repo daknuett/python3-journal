@@ -67,12 +67,15 @@ class System(object):
 
 		if("zip_journals" in self.preferences and self.preferences["zip_journals"]):
 			# from http://stackoverflow.com/questions/1855095/how-to-create-a-zip-archive-of-a-directory/
+			old_cwd = os.getcwd()
+			os.chdir(self.path)
 			zipf = ZipFile(path + ".zip", "w")
 			for dirname, subdirs, files in os.walk(path):
 				zipf.write(os.path.relpath(dirname, start = self.path))
 				for filename in files:
 					zipf.write(os.path.join(os.path.relpath(dirname, start = self.path), filename))
 			zipf.close()
+			os.chdir(old_cwd)
 
 			shutil.rmtree(path)
 		return self.id_count - 1
@@ -144,17 +147,20 @@ class System(object):
 		self.save_journal(journal)
 		
 		
-		path = os.path.join(self.path, fs_compatible_name(heading))
+		path = os.path.join(self.path, fs_compatible_name(journal.heading))
 		if("zip_journals" in self.preferences and self.preferences["zip_journals"]):
 			# from http://stackoverflow.com/questions/1855095/how-to-create-a-zip-archive-of-a-directory/
+			old_cwd = os.getcwd()
+			os.chdir(self.path)
 			zipf = ZipFile(path + ".zip", "w")
 			for dirname, subdirs, files in os.walk(path):
 				zipf.write(os.path.relpath(dirname, start = self.path))
 				for filename in files:
-					zf.write(os.path.join(os.path.relpath(dirname, start = self.path), filename))
+					zipf.write(os.path.join(os.path.relpath(dirname, start = self.path), filename))
 			zipf.close()
+			os.chdir(old_cwd)
 
-			os.rmdir(path)
+			shutil.rmtree(path)
 		
 		
 	def save_journal(self, journal):
@@ -165,11 +171,11 @@ class System(object):
 		Returns: None
 		"""
 
-		journal_path = os.path.join(self.path + fs_compatible_name(journal.heading))
+		journal_path = os.path.join(self.path, fs_compatible_name(journal.heading))
 		# save the children...
 		for entry in journal.entries:
 			if(entry.has_unsaved):
-				entry_path = os.path.join(journal_path + statics["data_path"] + fs_compatible_name(entry.heading))
+				entry_path = os.path.join(journal_path, statics["data_path"], fs_compatible_name(entry.heading))
 				if(not os.path.exists(entry_path)):
 					os.makedirs(entry_path)
 				for name, child in entry.children.items():
