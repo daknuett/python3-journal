@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 
-import os, sys, json
+import os, sys, json, datetime, shutil
 from ..model.journal import Journal
 from ..model.entry import Entry, Child
 from zipfile import ZipFile
-from ..util.util import fs_compatible_name
+from ..util.util import fs_compatible_name, open_closing
 
 
 statics = {
@@ -24,7 +24,7 @@ class System(object):
 	- storage space
 	- journal management (create, delete, store)
 	"""
-
+	version = "0.0.1"
 	def __init__(self, path, preferences = {},
 			paths_by_id = {}, headings_by_id = {}, id_count = 0):
 		self.path = path
@@ -32,7 +32,7 @@ class System(object):
 		self.paths_by_id = paths_by_id
 		self.headings_by_id = headings_by_id
 		self.id_count = id_count
-		self.version = "0.0.1"
+		
 
 	def create_journal(self, heading, description, authors, 
 			tags = [], dtime = "now", datetime_fmt = "%d.%m.%Y-%H:%M:%S", need_storage = False):
@@ -45,8 +45,8 @@ class System(object):
 		Returns: the journal_id
 		"""
 		path = os.path.join(self.path, fs_compatible_name(heading))
-		os.path.makedirs(path)
-		if(dtime == now):
+		os.makedirs(path)
+		if(dtime == "now"):
 			dtime = datetime.datetime.now()
 		else:
 			dtime = datetime.datetime.strptime(dtime, datetime_fmt)
@@ -69,21 +69,41 @@ class System(object):
 			# from http://stackoverflow.com/questions/1855095/how-to-create-a-zip-archive-of-a-directory/
 			zipf = ZipFile(path + ".zip", "w")
 			for dirname, subdirs, files in os.walk(path):
-				zipf.write(dirname)
+				zipf.write(os.path.relpath(dirname, start = self.path))
 				for filename in files:
-					zf.write(os.path.join(dirname, filename))
+					zipf.write(os.path.join(os.path.relpath(dirname, start = self.path), filename))
 			zipf.close()
 
-			os.rmdir(path)
+			shutil.rmtree(path)
 		return self.id_count - 1
 
 	def to_dict(self):
 		"""
 		Convert this system to a dict representation.
 		"""
-		return {"type": "system", "version": self.version, "path": self.path, 
+		return {"type": "system", "version": System.version, "path": self.path, 
 			"preferences": self.preferences, "paths_by_id": self.paths_by_id,
 			"headings_by_id": self.headings_by_id, "id_count": self.id_count}
+	@staticmethod
+	def from_dict(dct):
+		if(not "type" in dct):
+			raise Exception("malformed dictionary: no type field")
+		if(dct["type"] != "system"):
+			raise Exception("dictionary does not describe a entry")
+		major, minor, release = dct["version"].split(".")
+		my_major, my_minor, my_release = System.version.split(".")
+
+		# FIXME: find a better way to calculate this:
+		major, minor, release = int(major), int(minor), int(release)
+		my_major, my_minor, my_release = int(my_major), int(my_minor), int(my_release)
+
+		version = major * 10000 + minor * 100 + release
+		my_version = my_major * 10000 + my_minor * 100 + my_release
+		if(version > my_version):
+			raise Exception("entry version ({}) is too high. Current version: ({})".format(dct["version"], self.version))
+		return System(dct["path"], preferences = dct["preferences"],
+			paths_by_id = dct["paths_by_id"], headings_by_id = dct["headings_by_id"], id_count = dct["id_count"])
+
 		
 	def dump(self):
 		"""
@@ -101,14 +121,16 @@ class System(object):
 		"""
 		if(not id_ in self.paths_by_id):
 			raise Exception("unknown id: {}".format(id_))
-		if(not os.path.exists(self.paths_by_id[id_])):
-			if(os.path.exists(self.paths_by_id[id_] + ".zip")):
-				f = ZipFile(self.paths_by_id[id_] + ".zip")
-				f.extract_all(path = self.path)
+		path = os.path.join(self.path, self.paths_by_id[id_])
+		if(not os.path.exists(path)):
+			if(os.path.exists(path + ".zip")):
+				f = ZipFile(path + ".zip")
+				f.extractall(path = self.path)
+				f.close()
 			else:
-				raise Exception("Journal not found: '{}' ('{}')".format(self.paths_by_id[id_],
+				raise Exception("Journal not found: '{}' ('{}')".format(path,
 							self.headings_by_id[id_]))
-		with open_closing(os.path.join(self.paths_by_id[id_], statics["journal_file"])) as journal_file:
+		with open_closing(os.path.join(path, statics["journal_file"])) as journal_file:
 			journal = Journal.from_dict(json.load(journal_file))
 		return journal
 
@@ -127,9 +149,9 @@ class System(object):
 			# from http://stackoverflow.com/questions/1855095/how-to-create-a-zip-archive-of-a-directory/
 			zipf = ZipFile(path + ".zip", "w")
 			for dirname, subdirs, files in os.walk(path):
-				zipf.write(dirname)
+				zipf.write(os.path.relpath(dirname, start = self.path))
 				for filename in files:
-					zf.write(os.path.join(dirname, filename))
+					zf.write(os.path.join(os.path.relpath(dirname, start = self.path), filename))
 			zipf.close()
 
 			os.rmdir(path)
