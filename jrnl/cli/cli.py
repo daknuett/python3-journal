@@ -9,6 +9,7 @@ import asyncio, aiofiles
 from .system import create_journal, lsj
 from .entry import create_entry
 from .journal import lse, print_entry
+from .convert import convert
 from ..model.entry import *
 
 """
@@ -195,6 +196,7 @@ if __name__ == "__main__":
 		"create_entry": create_entry,
 		"print_entry": print_entry,
 		"select": select,
+		"convert": convert,
 		"close": close,
 		"save": save,
 		"lse": lse,
@@ -209,6 +211,7 @@ if __name__ == "__main__":
 		"save": "Save the System",
 		"select": "Open a journal to use it",
 		"close": "Close the current journal",
+		"convert": "Convert the journal to a markup file",
 		"create_journal": "Create a new journal"
 	}
 	async def help(session, inp, out, *args):
