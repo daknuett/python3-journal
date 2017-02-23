@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>jrnl.system package &mdash; python3-journal 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/pydoctheme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/sidebar.js"></script>
+    <link rel="top" title="python3-journal 0.0.1 documentation" href="index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">python3-journal 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="jrnl-system-package">
+<h1>jrnl.system package<a class="headerlink" href="#jrnl-system-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="jrnl.system.convert.html">jrnl.system.convert package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="jrnl.system.convert.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jrnl.system.convert.html#module-jrnl.system.convert.template">jrnl.system.convert.template module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jrnl.system.convert.html#module-jrnl.system.convert">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="jrnl.system.search.html">jrnl.system.search package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="jrnl.system.search.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jrnl.system.search.html#module-jrnl.system.search.entry">jrnl.system.search.entry module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jrnl.system.search.html#module-jrnl.system.search">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-jrnl.system.system">
+<span id="jrnl-system-system-module"></span><h2>jrnl.system.system module<a class="headerlink" href="#module-jrnl.system.system" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="jrnl.system.system.System">
+<em class="property">class </em><code class="descclassname">jrnl.system.system.</code><code class="descname">System</code><span class="sig-paren">(</span><em>path</em>, <em>preferences={}</em>, <em>paths_by_id={}</em>, <em>headings_by_id={}</em>, <em>id_count=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/system/system.html#System"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.system.system.System" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>The interface to access journals.</p>
+<p>The system manages</p>
+<ul class="simple">
+<li>the journals</li>
+<li>storage space</li>
+<li>journal management (create, delete, store)</li>
+</ul>
+<dl class="method">
+<dt id="jrnl.system.system.System.close_journal">
+<code class="descname">close_journal</code><span class="sig-paren">(</span><em>journal</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/system/system.html#System.close_journal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.system.system.System.close_journal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the journal by saving all data and zipping the directory,
+if self.preferences.zip_journals is set.</p>
+<p>Returns: None</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jrnl.system.system.System.create_journal">
+<code class="descname">create_journal</code><span class="sig-paren">(</span><em>heading</em>, <em>description</em>, <em>authors</em>, <em>tags=[]</em>, <em>dtime='now'</em>, <em>datetime_fmt='%d.%m.%Y-%H:%M:%S'</em>, <em>need_storage=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/system/system.html#System.create_journal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.system.system.System.create_journal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new journal.</p>
+<p>WARNING: this will just create the journal.
+In order to use it you must open_journal this journal.</p>
+<p>Returns: the journal_id</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jrnl.system.system.System.dump">
+<code class="descname">dump</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/system/system.html#System.dump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.system.system.System.dump" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the system to the system storage file.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="jrnl.system.system.System.from_dict">
+<em class="property">static </em><code class="descname">from_dict</code><span class="sig-paren">(</span><em>dct</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/system/system.html#System.from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.system.system.System.from_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="jrnl.system.system.System.open_journal">
+<code class="descname">open_journal</code><span class="sig-paren">(</span><em>id_</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/system/system.html#System.open_journal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.system.system.System.open_journal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open the journal with the given ID.</p>
+<p>Returns: The Journal.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jrnl.system.system.System.save_journal">
+<code class="descname">save_journal</code><span class="sig-paren">(</span><em>journal</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/system/system.html#System.save_journal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.system.system.System.save_journal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the journal by copying all new files
+and writing the JSON files.</p>
+<p>Returns: None</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jrnl.system.system.System.to_dict">
+<code class="descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/system/system.html#System.to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.system.system.System.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert this system to a dict representation.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="jrnl.system.system.System.version">
+<code class="descname">version</code><em class="property"> = '0.0.1'</em><a class="headerlink" href="#jrnl.system.system.System.version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-jrnl.system">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jrnl.system" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">jrnl.system package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-jrnl.system.system">jrnl.system.system module</a></li>
+<li><a class="reference internal" href="#module-jrnl.system">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/jrnl.system.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">python3-journal 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2017, Daniel Knüttel.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.6.
+    </div>
+  </body>
+</html>

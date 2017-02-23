@@ -1,0 +1,388 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>jrnl.model package &mdash; python3-journal 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/pydoctheme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/sidebar.js"></script>
+    <link rel="top" title="python3-journal 0.0.1 documentation" href="index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">python3-journal 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="jrnl-model-package">
+<h1>jrnl.model package<a class="headerlink" href="#jrnl-model-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-jrnl.model.archive">
+<span id="jrnl-model-archive-module"></span><h2>jrnl.model.archive module<a class="headerlink" href="#module-jrnl.model.archive" title="Permalink to this headline">¶</a></h2>
+<p>To reduce the size of journal files 
+archive entries are used.</p>
+<p>They will be created automatically by the journal in order to keep the
+memory usage small.</p>
+<dl class="class">
+<dt id="jrnl.model.archive.Archive">
+<em class="property">class </em><code class="descclassname">jrnl.model.archive.</code><code class="descname">Archive</code><span class="sig-paren">(</span><em>relpath</em>, <em>dtime_start</em>, <em>dtime_stop</em>, <em>entries=[]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/archive.html#Archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.archive.Archive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>An archive that will</p>
+<ul class="simple">
+<li>reduce the size of the journal file</li>
+<li>reduce memory usage, if store_internal is True</li>
+</ul>
+<p>The archive(s) will be generated automatically if the
+system.preferences[&#8220;archiving&#8221;] setting is true.
+Default is false, because it is still kind of buggy.</p>
+<dl class="staticmethod">
+<dt id="jrnl.model.archive.Archive.from_dict">
+<em class="property">static </em><code class="descname">from_dict</code><span class="sig-paren">(</span><em>dct</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/archive.html#Archive.from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.archive.Archive.from_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="jrnl.model.archive.Archive.from_entries">
+<em class="property">static </em><code class="descname">from_entries</code><span class="sig-paren">(</span><em>entries</em>, <em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/archive.html#Archive.from_entries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.archive.Archive.from_entries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the matching archive for the given list of entries.
+path should be the same path where the journal file is stored.
+The path will be used to store the archive.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jrnl.model.archive.Archive.load">
+<code class="descname">load</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/archive.html#Archive.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.archive.Archive.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the entries from the archive file.
+The archive file must be under the given path.
+The path must not contain the archive file.
+For instance:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>path/to/journal/archive.json &lt;- WRONG
+path/to/journal/             &lt;- RIGHT
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="jrnl.model.archive.Archive.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/archive.html#Archive.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.archive.Archive.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the archive under the given path.
+The path must not contain the archive file.
+For instance:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>path/to/journal/archive.json &lt;- WRONG
+path/to/journal/             &lt;- RIGHT
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="jrnl.model.archive.Archive.timefmt">
+<code class="descname">timefmt</code><em class="property"> = '%d.%m.%Y-%H:%M:%S'</em><a class="headerlink" href="#jrnl.model.archive.Archive.timefmt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="jrnl.model.archive.Archive.to_dict">
+<code class="descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/archive.html#Archive.to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.archive.Archive.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="jrnl.model.archive.Archive.version">
+<code class="descname">version</code><em class="property"> = '0.0.1'</em><a class="headerlink" href="#jrnl.model.archive.Archive.version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-jrnl.model.entry">
+<span id="jrnl-model-entry-module"></span><h2>jrnl.model.entry module<a class="headerlink" href="#module-jrnl.model.entry" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="jrnl.model.entry.Child">
+<em class="property">class </em><code class="descclassname">jrnl.model.entry.</code><code class="descname">Child</code><span class="sig-paren">(</span><em>name</em>, <em>alttext</em>, <em>embed=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/entry.html#Child"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.entry.Child" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>The base child object</p>
+<dl class="staticmethod">
+<dt id="jrnl.model.entry.Child.from_dict">
+<em class="property">static </em><code class="descname">from_dict</code><span class="sig-paren">(</span><em>dct</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/entry.html#Child.from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.entry.Child.from_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a dict object to a Child object.
+This will automatically invoke subclasses.</p>
+<p>TODO: Adapt this to 3.6 features
+FIXME: versionchecking</p>
+<p>Returns: The Child</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jrnl.model.entry.Child.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/entry.html#Child.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.entry.Child.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the content of this child.
+Unused for non-file children.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="jrnl.model.entry.Child.subclasstypes">
+<code class="descname">subclasstypes</code><em class="property"> = {'filechild': &lt;class 'jrnl.model.entry.FileChild'&gt;, 'renderchild': &lt;class 'jrnl.model.entry.RenderChild'&gt;}</em><a class="headerlink" href="#jrnl.model.entry.Child.subclasstypes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="jrnl.model.entry.Child.to_dict">
+<code class="descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/entry.html#Child.to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.entry.Child.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert this child to a dict object.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="jrnl.model.entry.Child.version">
+<code class="descname">version</code><em class="property"> = '0.0.1'</em><a class="headerlink" href="#jrnl.model.entry.Child.version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="jrnl.model.entry.Entry">
+<em class="property">class </em><code class="descclassname">jrnl.model.entry.</code><code class="descname">Entry</code><span class="sig-paren">(</span><em>datetime</em>, <em>heading</em>, <em>text</em>, <em>author=''</em>, <em>tags=[]</em>, <em>children={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/entry.html#Entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.entry.Entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A journal entry.</p>
+<dl class="method">
+<dt id="jrnl.model.entry.Entry.add_child">
+<code class="descname">add_child</code><span class="sig-paren">(</span><em>child</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/entry.html#Entry.add_child"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.entry.Entry.add_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a child.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="jrnl.model.entry.Entry.from_dict">
+<em class="property">static </em><code class="descname">from_dict</code><span class="sig-paren">(</span><em>dct</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/entry.html#Entry.from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.entry.Entry.from_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct an Entry from a dictionary.</p>
+<p>Returns: The Entry</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="jrnl.model.entry.Entry.timefmt">
+<code class="descname">timefmt</code><em class="property"> = '%d.%m.%Y-%H:%M:%S'</em><a class="headerlink" href="#jrnl.model.entry.Entry.timefmt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="jrnl.model.entry.Entry.to_dict">
+<code class="descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/entry.html#Entry.to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.entry.Entry.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="jrnl.model.entry.Entry.version">
+<code class="descname">version</code><em class="property"> = '0.0.1'</em><a class="headerlink" href="#jrnl.model.entry.Entry.version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="jrnl.model.entry.FileChild">
+<em class="property">class </em><code class="descclassname">jrnl.model.entry.</code><code class="descname">FileChild</code><span class="sig-paren">(</span><em>filename</em>, <em>dtype</em>, <em>name</em>, <em>alttext</em>, <em>embed=True</em>, <em>store_internal=False</em>, <em>content=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/entry.html#FileChild"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.entry.FileChild" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jrnl.model.entry.Child" title="jrnl.model.entry.Child"><code class="xref py py-class docutils literal"><span class="pre">jrnl.model.entry.Child</span></code></a></p>
+<p>Used to embed/insert files.</p>
+<p>If store_internal is True the content will be stored as a base64 encoded UTF-8
+string.</p>
+<dl class="staticmethod">
+<dt id="jrnl.model.entry.FileChild.from_dict">
+<em class="property">static </em><code class="descname">from_dict</code><span class="sig-paren">(</span><em>dct</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/entry.html#FileChild.from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.entry.FileChild.from_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="jrnl.model.entry.FileChild.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/entry.html#FileChild.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.entry.FileChild.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the file under the given path, if store_internal is False.
+Will set self.filename to <code class="docutils literal"><span class="pre">os.path.join(path,</span> <span class="pre">os.path.basename(self.filename))</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jrnl.model.entry.FileChild.to_dict">
+<code class="descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/entry.html#FileChild.to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.entry.FileChild.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="jrnl.model.entry.RenderChild">
+<em class="property">class </em><code class="descclassname">jrnl.model.entry.</code><code class="descname">RenderChild</code><span class="sig-paren">(</span><em>data</em>, <em>dtype</em>, <em>name</em>, <em>alttext</em>, <em>embed=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/entry.html#RenderChild"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.entry.RenderChild" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jrnl.model.entry.Child" title="jrnl.model.entry.Child"><code class="xref py py-class docutils literal"><span class="pre">jrnl.model.entry.Child</span></code></a></p>
+<p>Used to embed rendered data (for instance LaTeX)</p>
+<dl class="staticmethod">
+<dt id="jrnl.model.entry.RenderChild.from_dict">
+<em class="property">static </em><code class="descname">from_dict</code><span class="sig-paren">(</span><em>dct</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/entry.html#RenderChild.from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.entry.RenderChild.from_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="jrnl.model.entry.RenderChild.to_dict">
+<code class="descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/entry.html#RenderChild.to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.entry.RenderChild.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-jrnl.model.journal">
+<span id="jrnl-model-journal-module"></span><h2>jrnl.model.journal module<a class="headerlink" href="#module-jrnl.model.journal" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="jrnl.model.journal.Journal">
+<em class="property">class </em><code class="descclassname">jrnl.model.journal.</code><code class="descname">Journal</code><span class="sig-paren">(</span><em>heading</em>, <em>datetime</em>, <em>description</em>, <em>authors</em>, <em>tags=[]</em>, <em>need_storage=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/journal.html#Journal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.journal.Journal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>The representation of a journal.
+The attribute <code class="docutils literal"><span class="pre">entries</span></code> is a list of Entry and/or Archive objects.</p>
+<dl class="method">
+<dt id="jrnl.model.journal.Journal.add_entry">
+<code class="descname">add_entry</code><span class="sig-paren">(</span><em>entry</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/journal.html#Journal.add_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.journal.Journal.add_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new entry.</p>
+<p>Returns: None</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jrnl.model.journal.Journal.extract_all_archives">
+<code class="descname">extract_all_archives</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/journal.html#Journal.extract_all_archives"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.journal.Journal.extract_all_archives" title="Permalink to this definition">¶</a></dt>
+<dd><p>This will extract all archived entries, assuming that they are
+stored under <code class="docutils literal"><span class="pre">path</span></code>. Then the journal will contain only entries.</p>
+<p>This will remove all archive files.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="jrnl.model.journal.Journal.from_dict">
+<em class="property">static </em><code class="descname">from_dict</code><span class="sig-paren">(</span><em>dct</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/journal.html#Journal.from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.journal.Journal.from_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a dict to a Journal.</p>
+<p>Returns: The Journal</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jrnl.model.journal.Journal.get_entry">
+<code class="descname">get_entry</code><span class="sig-paren">(</span><em>heading</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/journal.html#Journal.get_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.journal.Journal.get_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the entry with this heading.</p>
+<p>Returns: The Entry or None</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jrnl.model.journal.Journal.search_entries">
+<code class="descname">search_entries</code><span class="sig-paren">(</span><em>heading_contains</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/journal.html#Journal.search_entries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.journal.Journal.search_entries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search all entrys with <code class="docutils literal"><span class="pre">heading_contains</span></code> in the heading.</p>
+<p>Returns: list of entries</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jrnl.model.journal.Journal.set_entry_by_datetime">
+<code class="descname">set_entry_by_datetime</code><span class="sig-paren">(</span><em>dtime</em>, <em>new_entry</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/journal.html#Journal.set_entry_by_datetime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.journal.Journal.set_entry_by_datetime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the entry with the given datetime dtime to new_entry
+Will raise an Exception if there is no such entry.      
+TODO: code this</p>
+<p>Returns: None</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jrnl.model.journal.Journal.set_entry_by_number">
+<code class="descname">set_entry_by_number</code><span class="sig-paren">(</span><em>number</em>, <em>new_entry</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/journal.html#Journal.set_entry_by_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.journal.Journal.set_entry_by_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the entry with the given number to new_entry.
+Will raise IndexError, if the number is not within the number of entries.
+TODO: code this</p>
+<p>Returns: None</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="jrnl.model.journal.Journal.to_dict">
+<code class="descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jrnl/model/journal.html#Journal.to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#jrnl.model.journal.Journal.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="jrnl.model.journal.Journal.version">
+<code class="descname">version</code><em class="property"> = '0.0.1'</em><a class="headerlink" href="#jrnl.model.journal.Journal.version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-jrnl.model">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jrnl.model" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">jrnl.model package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-jrnl.model.archive">jrnl.model.archive module</a></li>
+<li><a class="reference internal" href="#module-jrnl.model.entry">jrnl.model.entry module</a></li>
+<li><a class="reference internal" href="#module-jrnl.model.journal">jrnl.model.journal module</a></li>
+<li><a class="reference internal" href="#module-jrnl.model">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/jrnl.model.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">python3-journal 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2017, Daniel Knüttel.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.6.
+    </div>
+  </body>
+</html>

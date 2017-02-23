@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>jrnl.cli.system &mdash; python3-journal 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/pydoctheme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../_static/sidebar.js"></script>
+    <link rel="top" title="python3-journal 0.0.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">python3-journal 0.0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for jrnl.cli.system</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/python3</span>
+
+<span class="kn">from</span> <span class="nn">.util</span> <span class="kn">import</span> <span class="n">get_authors</span><span class="p">,</span> <span class="n">get_tags</span>
+
+<div class="viewcode-block" id="create_journal"><a class="viewcode-back" href="../../../jrnl.cli.html#jrnl.cli.system.create_journal">[docs]</a><span class="n">async</span> <span class="k">def</span> <span class="nf">create_journal</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Read userdata and create a new journal</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">system</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span>
+	<span class="n">created_journal</span> <span class="o">=</span> <span class="bp">False</span>
+	<span class="k">while</span><span class="p">(</span><span class="ow">not</span> <span class="n">created_journal</span><span class="p">):</span>
+		<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;Creating a new journal&quot;</span><span class="p">)</span>
+		<span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;datetime_fmt&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">.%m.%Y-%H:%M:%S&quot;</span><span class="p">,</span> <span class="s2">&quot;dtime&quot;</span><span class="p">:</span> <span class="s2">&quot;now&quot;</span><span class="p">,</span> <span class="s2">&quot;need_storage&quot;</span><span class="p">:</span> <span class="bp">False</span><span class="p">}</span>
+		<span class="n">data</span><span class="p">[</span><span class="s2">&quot;heading&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_string</span><span class="p">(</span><span class="s2">&quot;heading &gt; &quot;</span><span class="p">)</span>
+		<span class="n">data</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_string</span><span class="p">(</span><span class="s2">&quot;description &gt; &quot;</span><span class="p">)</span>
+		<span class="n">data</span><span class="p">[</span><span class="s2">&quot;authors&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">await</span> <span class="n">get_authors</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+		<span class="n">data</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">await</span> <span class="n">get_tags</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+		<span class="k">while</span><span class="p">(</span><span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_char</span><span class="p">(</span><span class="s2">&quot;is this information correct [Y/n]? &quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">)):</span>
+			<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;enter the wrong field name&quot;</span><span class="p">)</span>
+			<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;fieldnames: &quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+			<span class="n">fieldname</span> <span class="o">=</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_string</span><span class="p">(</span><span class="s2">&quot;fieldname &gt; &quot;</span><span class="p">)</span>
+			<span class="k">if</span><span class="p">(</span><span class="ow">not</span> <span class="n">fieldname</span> <span class="ow">in</span> <span class="n">data</span><span class="p">):</span>
+				<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;ERR: fieldname not recoginzed&quot;</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">if</span><span class="p">(</span><span class="n">fieldname</span> <span class="o">==</span> <span class="s2">&quot;authors&quot;</span><span class="p">):</span>
+					<span class="n">data</span><span class="p">[</span><span class="s2">&quot;authors&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">await</span> <span class="n">get_authors</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+				<span class="k">if</span><span class="p">(</span><span class="n">fieldname</span> <span class="o">==</span> <span class="s2">&quot;tags&quot;</span><span class="p">):</span>
+					<span class="n">data</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">await</span> <span class="n">get_tags</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="n">data</span><span class="p">[</span><span class="n">fieldname</span><span class="p">]</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_type</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">fieldname</span><span class="p">]),</span> <span class="n">fieldname</span> <span class="o">+</span> <span class="s2">&quot; &gt; &quot;</span><span class="p">)</span>
+
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">system</span><span class="o">.</span><span class="n">create_journal</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;heading&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;authors&quot;</span><span class="p">],</span>
+					<span class="n">tags</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">],</span> <span class="n">dtime</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;dtime&quot;</span><span class="p">],</span> <span class="n">datetime_fmt</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;datetime_fmt&quot;</span><span class="p">],</span>
+					<span class="n">need_storage</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;need_storage&quot;</span><span class="p">])</span>
+			<span class="n">created_journal</span> <span class="o">=</span> <span class="bp">True</span>
+		<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+			<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;Failed to create the journal: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+			<span class="k">if</span><span class="p">(</span><span class="ow">not</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_char</span><span class="p">(</span><span class="s2">&quot;Retry [N/y]? &quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">)):</span>
+				<span class="n">created_journal</span> <span class="o">=</span> <span class="bp">True</span></div>
+		
+<div class="viewcode-block" id="lsj"><a class="viewcode-back" href="../../../jrnl.cli.html#jrnl.cli.system.lsj">[docs]</a><span class="n">async</span> <span class="k">def</span> <span class="nf">lsj</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+	<span class="k">if</span><span class="p">(</span><span class="s2">&quot;paths&quot;</span> <span class="ow">in</span> <span class="n">args</span><span class="p">):</span>
+		<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">)</span>
+		<span class="k">for</span> <span class="n">id_</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">session</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">paths_by_id</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+			<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="s2">&quot;:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+	<span class="k">elif</span><span class="p">(</span><span class="s2">&quot;headings&quot;</span> <span class="ow">in</span> <span class="n">args</span> <span class="ow">or</span> <span class="bp">True</span><span class="p">):</span>
+		<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;heading&quot;</span><span class="p">)</span>
+		<span class="k">for</span> <span class="n">id_</span><span class="p">,</span> <span class="n">heading</span> <span class="ow">in</span> <span class="n">session</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">headings_by_id</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+			<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="s2">&quot;:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">heading</span><span class="p">)</span></div>
+
+
+	
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">python3-journal 0.0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2017, Daniel Knüttel.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.6.
+    </div>
+  </body>
+</html>

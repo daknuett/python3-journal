@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>jrnl.cli.util &mdash; python3-journal 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/pydoctheme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../_static/sidebar.js"></script>
+    <link rel="top" title="python3-journal 0.0.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">python3-journal 0.0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for jrnl.cli.util</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">..model.entry</span> <span class="kn">import</span> <span class="n">FileChild</span><span class="p">,</span> <span class="n">RenderChild</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<div class="viewcode-block" id="get_authors"><a class="viewcode-back" href="../../../jrnl.cli.html#jrnl.cli.util.get_authors">[docs]</a><span class="n">async</span> <span class="k">def</span> <span class="nf">get_authors</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
+	<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;Enter the authors (empty line to stop)&quot;</span><span class="p">)</span>
+	<span class="n">authors</span> <span class="o">=</span> <span class="p">[]</span>
+	<span class="n">auth</span> <span class="o">=</span> <span class="s2">&quot;q&quot;</span>
+	<span class="k">while</span><span class="p">(</span><span class="n">auth</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+		<span class="n">auth</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_string</span><span class="p">(</span><span class="s2">&quot; author &gt; &quot;</span><span class="p">)</span>
+		<span class="k">if</span><span class="p">(</span><span class="n">auth</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+			<span class="n">authors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">auth</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">authors</span></div>
+
+<div class="viewcode-block" id="get_tags"><a class="viewcode-back" href="../../../jrnl.cli.html#jrnl.cli.util.get_tags">[docs]</a><span class="n">async</span> <span class="k">def</span> <span class="nf">get_tags</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
+	<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;Enter the tags (empty line to stop)&quot;</span><span class="p">)</span>
+	<span class="n">tags</span> <span class="o">=</span> <span class="p">[]</span>
+	<span class="n">tag</span> <span class="o">=</span> <span class="s2">&quot;q&quot;</span>
+	<span class="k">while</span><span class="p">(</span><span class="n">tag</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+		<span class="n">tag</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_string</span><span class="p">(</span><span class="s2">&quot; tag &gt; &quot;</span><span class="p">)</span>
+		<span class="k">if</span><span class="p">(</span><span class="n">tag</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+			<span class="n">tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">tags</span></div>
+
+
+<div class="viewcode-block" id="get_children"><a class="viewcode-back" href="../../../jrnl.cli.html#jrnl.cli.util.get_children">[docs]</a><span class="n">async</span> <span class="k">def</span> <span class="nf">get_children</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
+	<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;Enter an empty name to stop&quot;</span><span class="p">)</span>
+	<span class="n">children</span> <span class="o">=</span> <span class="p">[]</span>
+
+	<span class="n">constructors</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;filechild&quot;</span><span class="p">:</span> <span class="n">__get_filechild</span><span class="p">,</span> <span class="s2">&quot;renderchild&quot;</span><span class="p">:</span> <span class="n">__get_renderchild</span><span class="p">}</span>
+	
+	<span class="k">def</span> <span class="nf">get_valid_type</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+		<span class="k">if</span><span class="p">(</span><span class="n">string</span> <span class="ow">in</span> <span class="n">constructors</span><span class="p">):</span>
+			<span class="k">return</span> <span class="n">string</span>
+		<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;type must be in {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">([</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">constructors</span><span class="o">.</span><span class="n">items</span><span class="p">()]))</span> 
+
+	<span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;q&quot;</span>
+	<span class="k">while</span><span class="p">(</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+		<span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+		<span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_string</span><span class="p">(</span><span class="s2">&quot; name &gt; &quot;</span><span class="p">)</span>
+		<span class="n">name</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+		<span class="k">if</span><span class="p">(</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+			<span class="k">break</span>
+		<span class="n">chtype</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_type</span><span class="p">(</span><span class="n">get_valid_type</span><span class="p">,</span> <span class="s2">&quot; type &gt; &quot;</span><span class="p">)</span>
+		<span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">await</span> <span class="n">constructors</span><span class="p">[</span><span class="n">chtype</span><span class="p">](</span><span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
+	<span class="k">return</span> <span class="n">children</span></div>
+
+<span class="n">async</span> <span class="k">def</span> <span class="nf">__get_filechild</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+	<span class="n">data</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_string</span><span class="p">(</span><span class="s2">&quot; filename &gt; &quot;</span><span class="p">)</span>
+	<span class="k">while</span><span class="p">(</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]))):</span>
+		<span class="n">data</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_string</span><span class="p">(</span><span class="s2">&quot; filename [did not exist] &gt; &quot;</span><span class="p">)</span>
+	<span class="n">data</span><span class="p">[</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_string</span><span class="p">(</span><span class="s2">&quot; dtype &gt; &quot;</span><span class="p">)</span>
+	<span class="n">data</span><span class="p">[</span><span class="s2">&quot;alttext&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_string</span><span class="p">(</span><span class="s2">&quot; alttext &gt; &quot;</span><span class="p">)</span>
+	<span class="n">data</span><span class="p">[</span><span class="s2">&quot;embed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_type</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="s2">&quot; embed &gt; &quot;</span><span class="p">)</span>
+	<span class="n">data</span><span class="p">[</span><span class="s2">&quot;store_internal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_type</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="s2">&quot; store_internal &gt; &quot;</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">FileChild</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;dtype&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+			<span class="n">data</span><span class="p">[</span><span class="s2">&quot;alttext&quot;</span><span class="p">],</span> <span class="n">embed</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;embed&quot;</span><span class="p">],</span> <span class="n">store_internal</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;store_internal&quot;</span><span class="p">])</span>
+
+<span class="n">async</span> <span class="k">def</span> <span class="nf">__get_renderchild</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+	<span class="n">data</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_string</span><span class="p">(</span><span class="s2">&quot; data &gt; &quot;</span><span class="p">)</span>
+	<span class="n">data</span><span class="p">[</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_string</span><span class="p">(</span><span class="s2">&quot; dtype &gt; &quot;</span><span class="p">)</span>
+	<span class="n">data</span><span class="p">[</span><span class="s2">&quot;alttext&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_string</span><span class="p">(</span><span class="s2">&quot; alttext &gt; &quot;</span><span class="p">)</span>
+	<span class="n">data</span><span class="p">[</span><span class="s2">&quot;embed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_type</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="s2">&quot; embed &gt; &quot;</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">RenderChild</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;dtype&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;alttext&quot;</span><span class="p">],</span> <span class="n">embed</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;embed&quot;</span><span class="p">])</span>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">python3-journal 0.0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2017, Daniel Knüttel.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.6.
+    </div>
+  </body>
+</html>

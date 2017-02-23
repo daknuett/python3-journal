@@ -1,0 +1,292 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>jrnl.system.convert.template &mdash; python3-journal 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/pydoctheme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../../_static/sidebar.js"></script>
+    <link rel="top" title="python3-journal 0.0.1 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">python3-journal 0.0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for jrnl.system.convert.template</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Templates to convert journals to markup languages.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EntryTemplate"><a class="viewcode-back" href="../../../../jrnl.system.convert.html#jrnl.system.convert.template.EntryTemplate">[docs]</a><span class="k">class</span> <span class="nc">EntryTemplate</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	A template to convert entries to markup languages.</span>
+
+<span class="sd">	- The str ``markuptype`` determines the output format (i.e. rst)</span>
+<span class="sd">	- The list ``fields`` is a list of supported data fields</span>
+<span class="sd">	- The str ``text`` is the actual template</span>
+<span class="sd">	- The dict ``defaults`` contains default values if someone wants to</span>
+<span class="sd">	  ignore those fields.</span>
+
+<span class="sd">	Example:</span>
+<span class="sd">	::</span>
+
+<span class="sd">		templ = {&quot;markuptype&quot;: &quot;rst&quot;,</span>
+<span class="sd">			&quot;text&quot;:\</span>
+<span class="sd">		&#39;&#39;&#39;</span>
+
+<span class="sd">		{heading}</span>
+<span class="sd">		============================================</span>
+<span class="sd">		</span>
+<span class="sd">		created by: {author}</span>
+<span class="sd">		created on: {datetime}</span>
+<span class="sd">		tags:       {tags}</span>
+<span class="sd">		</span>
+<span class="sd">		{text}	    </span>
+
+<span class="sd">		&#39;&#39;&#39;,</span>
+<span class="sd">			&quot;fields&quot;: [&quot;heading&quot;, &quot;author&quot;, &quot;datetime&quot;, &quot;tags&quot;, &quot;text&quot;],</span>
+<span class="sd">			&quot;defaults&quot;: {}</span>
+<span class="sd">		}</span>
+<span class="sd">		templ = EntryTemplate.from_dict(templ)</span>
+
+<span class="sd">		data = {&quot;author&quot;: &quot;Me&quot;,</span>
+<span class="sd">			&quot;heading&quot;: &quot;Foo Bar&quot;,</span>
+<span class="sd">			&quot;datetime&quot;: &quot;12.12.12&quot;,</span>
+<span class="sd">			&quot;tags&quot;: [],</span>
+<span class="sd">			&quot;text&quot;: &quot;This is just a small example&quot;</span>
+<span class="sd">		}</span>
+<span class="sd">		print(templ.format(data))</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;0.0.1&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">markuptype</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">defaults</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">markuptype</span> <span class="o">=</span> <span class="n">markuptype</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">fields</span> <span class="o">=</span> <span class="n">fields</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">defaults</span> <span class="o">=</span> <span class="n">defaults</span>
+<div class="viewcode-block" id="EntryTemplate.to_dict"><a class="viewcode-back" href="../../../../jrnl.system.convert.html#jrnl.system.convert.template.EntryTemplate.to_dict">[docs]</a>	<span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;entrytemplate&quot;</span><span class="p">,</span> <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="n">EntryTemplate</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+			<span class="s2">&quot;markuptype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">markuptype</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+			<span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">,</span> <span class="s2">&quot;defaults&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">}</span></div>
+
+	<span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="EntryTemplate.from_dict"><a class="viewcode-back" href="../../../../jrnl.system.convert.html#jrnl.system.convert.template.EntryTemplate.from_dict">[docs]</a>	<span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
+		<span class="k">if</span><span class="p">(</span><span class="ow">not</span> <span class="s2">&quot;type&quot;</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">):</span>
+			<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;malformed dictionary: no type field&quot;</span><span class="p">)</span>
+		<span class="k">if</span><span class="p">(</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;entrytemplate&quot;</span><span class="p">):</span>
+			<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;dictionary does not describe a entrytemplate&quot;</span><span class="p">)</span>
+		<span class="n">major</span><span class="p">,</span> <span class="n">minor</span><span class="p">,</span> <span class="n">release</span> <span class="o">=</span> <span class="n">dct</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+		<span class="n">my_major</span><span class="p">,</span> <span class="n">my_minor</span><span class="p">,</span> <span class="n">my_release</span> <span class="o">=</span> <span class="n">EntryTemplate</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+
+		<span class="c1"># FIXME: find a better way to calculate this:</span>
+		<span class="n">major</span><span class="p">,</span> <span class="n">minor</span><span class="p">,</span> <span class="n">release</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">major</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">minor</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">release</span><span class="p">)</span>
+		<span class="n">my_major</span><span class="p">,</span> <span class="n">my_minor</span><span class="p">,</span> <span class="n">my_release</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">my_major</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">my_minor</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">my_release</span><span class="p">)</span>
+
+		<span class="n">version</span> <span class="o">=</span> <span class="n">major</span> <span class="o">*</span> <span class="mi">10000</span> <span class="o">+</span> <span class="n">minor</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">+</span> <span class="n">release</span>
+		<span class="n">my_version</span> <span class="o">=</span> <span class="n">my_major</span> <span class="o">*</span> <span class="mi">10000</span> <span class="o">+</span> <span class="n">my_minor</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">+</span> <span class="n">my_release</span>
+		<span class="k">if</span><span class="p">(</span><span class="n">version</span> <span class="o">&gt;</span> <span class="n">my_version</span><span class="p">):</span>
+			<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;entrytemplate version ({}) is too high. Current version: ({})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">))</span>
+
+		<span class="k">return</span> <span class="n">EntryTemplate</span><span class="p">(</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;markuptype&quot;</span><span class="p">],</span> <span class="n">dct</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span> <span class="n">dct</span><span class="p">[</span><span class="s2">&quot;fields&quot;</span><span class="p">],</span> <span class="n">dct</span><span class="p">[</span><span class="s2">&quot;defaults&quot;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="EntryTemplate.format"><a class="viewcode-back" href="../../../../jrnl.system.convert.html#jrnl.system.convert.template.EntryTemplate.format">[docs]</a>	<span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">}</span>
+		<span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
+			<span class="k">if</span><span class="p">(</span><span class="ow">not</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">):</span>
+				<span class="k">if</span><span class="p">(</span><span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">):</span>
+					<span class="n">fields</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">[</span><span class="n">field</span><span class="p">]</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Required field missing: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">field</span><span class="p">))</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">fields</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="JournalTemplate"><a class="viewcode-back" href="../../../../jrnl.system.convert.html#jrnl.system.convert.template.JournalTemplate">[docs]</a><span class="k">class</span> <span class="nc">JournalTemplate</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	<span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;0.0.1&quot;</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">markuptype</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">entry_template</span><span class="p">,</span> <span class="n">defaults</span> <span class="o">=</span> <span class="p">{}):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">markuptype</span> <span class="o">=</span> <span class="n">markuptype</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">fields</span> <span class="o">=</span> <span class="n">fields</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">defaults</span> <span class="o">=</span> <span class="n">defaults</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">entry_template</span> <span class="o">=</span> <span class="n">entry_template</span>
+<div class="viewcode-block" id="JournalTemplate.to_dict"><a class="viewcode-back" href="../../../../jrnl.system.convert.html#jrnl.system.convert.template.JournalTemplate.to_dict">[docs]</a>	<span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;journaltemplate&quot;</span><span class="p">,</span> <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="n">JournalTemplate</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+			<span class="s2">&quot;markuptype&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">markuptype</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+			<span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">,</span> <span class="s2">&quot;defaults&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">,</span>
+			<span class="s2">&quot;entry_template&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry_template</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()}</span></div>
+
+	<span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="JournalTemplate.from_dict"><a class="viewcode-back" href="../../../../jrnl.system.convert.html#jrnl.system.convert.template.JournalTemplate.from_dict">[docs]</a>	<span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
+		<span class="k">if</span><span class="p">(</span><span class="ow">not</span> <span class="s2">&quot;type&quot;</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">):</span>
+			<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;malformed dictionary: no type field&quot;</span><span class="p">)</span>
+		<span class="k">if</span><span class="p">(</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;journaltemplate&quot;</span><span class="p">):</span>
+			<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;dictionary does not describe a journaltemplate&quot;</span><span class="p">)</span>
+		<span class="n">major</span><span class="p">,</span> <span class="n">minor</span><span class="p">,</span> <span class="n">release</span> <span class="o">=</span> <span class="n">dct</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+		<span class="n">my_major</span><span class="p">,</span> <span class="n">my_minor</span><span class="p">,</span> <span class="n">my_release</span> <span class="o">=</span> <span class="n">JournalTemplate</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+
+		<span class="c1"># FIXME: find a better way to calculate this:</span>
+		<span class="n">major</span><span class="p">,</span> <span class="n">minor</span><span class="p">,</span> <span class="n">release</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">major</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">minor</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">release</span><span class="p">)</span>
+		<span class="n">my_major</span><span class="p">,</span> <span class="n">my_minor</span><span class="p">,</span> <span class="n">my_release</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">my_major</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">my_minor</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">my_release</span><span class="p">)</span>
+
+		<span class="n">version</span> <span class="o">=</span> <span class="n">major</span> <span class="o">*</span> <span class="mi">10000</span> <span class="o">+</span> <span class="n">minor</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">+</span> <span class="n">release</span>
+		<span class="n">my_version</span> <span class="o">=</span> <span class="n">my_major</span> <span class="o">*</span> <span class="mi">10000</span> <span class="o">+</span> <span class="n">my_minor</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">+</span> <span class="n">my_release</span>
+		<span class="k">if</span><span class="p">(</span><span class="n">version</span> <span class="o">&gt;</span> <span class="n">my_version</span><span class="p">):</span>
+			<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;journaltemplate version ({}) is too high. Current version: ({})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">))</span>
+
+		<span class="k">return</span> <span class="n">JournalTemplate</span><span class="p">(</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;markuptype&quot;</span><span class="p">],</span> <span class="n">dct</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span> 
+				<span class="n">dct</span><span class="p">[</span><span class="s2">&quot;fields&quot;</span><span class="p">],</span> 
+				<span class="n">EntryTemplate</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">dct</span><span class="p">[</span><span class="s2">&quot;entry_template&quot;</span><span class="p">]),</span>
+				<span class="n">dct</span><span class="p">[</span><span class="s2">&quot;defaults&quot;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="JournalTemplate.format"><a class="viewcode-back" href="../../../../jrnl.system.convert.html#jrnl.system.convert.template.JournalTemplate.format">[docs]</a>	<span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="n">fields</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">}</span>
+		<span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
+			<span class="k">if</span><span class="p">(</span><span class="ow">not</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">):</span>
+				<span class="k">if</span><span class="p">(</span><span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">):</span>
+					<span class="n">fields</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">[</span><span class="n">field</span><span class="p">]</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Required field missing: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">field</span><span class="p">))</span>
+
+		<span class="k">if</span><span class="p">(</span><span class="s2">&quot;authors&quot;</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">):</span>
+			<span class="n">fields</span><span class="p">[</span><span class="s2">&quot;authors&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="s2">&quot;authors&quot;</span><span class="p">])</span>
+		<span class="k">if</span><span class="p">(</span><span class="s2">&quot;entries&quot;</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">):</span>
+			<span class="n">fields</span><span class="p">[</span><span class="s2">&quot;entries&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">entry_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">entry</span><span class="p">)</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">[</span><span class="s2">&quot;entries&quot;</span><span class="p">]])</span>
+		
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">fields</span><span class="p">)</span></div></div>
+
+<span class="n">default_entry_templates</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="s2">&quot;rst&quot;</span><span class="p">:</span>
+		<span class="n">EntryTemplate</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span>\
+		<span class="p">{</span>
+		<span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;entrytemplate&quot;</span><span class="p">,</span>
+		<span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+		<span class="s2">&quot;markuptype&quot;</span><span class="p">:</span> <span class="s2">&quot;rst&quot;</span><span class="p">,</span>
+		<span class="s2">&quot;text&quot;</span><span class="p">:</span>\
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">{heading}</span>
+<span class="sd">--------------------------------------------</span>
+
+<span class="sd">:created by: {author}  </span>
+<span class="sd">:created on: {datetime}</span>
+<span class="sd">:tags:       ``{tags}``</span>
+
+<span class="sd">{text}	    </span>
+
+<span class="sd">&#39;&#39;&#39;</span><span class="p">,</span>
+			<span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;heading&quot;</span><span class="p">,</span> <span class="s2">&quot;author&quot;</span><span class="p">,</span> <span class="s2">&quot;datetime&quot;</span><span class="p">,</span> <span class="s2">&quot;tags&quot;</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">],</span>
+			<span class="s2">&quot;defaults&quot;</span><span class="p">:</span> <span class="p">{}</span>
+		<span class="p">})</span>
+<span class="p">}</span>
+
+<span class="n">default_journal_templates</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="s2">&quot;rst&quot;</span><span class="p">:</span> <span class="n">JournalTemplate</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span>\
+		<span class="p">{</span>
+		<span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;journaltemplate&quot;</span><span class="p">,</span>
+		<span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.1&quot;</span><span class="p">,</span>
+		<span class="s2">&quot;markuptype&quot;</span><span class="p">:</span> <span class="s2">&quot;rst&quot;</span><span class="p">,</span> 
+		<span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;heading&quot;</span><span class="p">,</span> <span class="s2">&quot;authors&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;datetime&quot;</span><span class="p">,</span> <span class="s2">&quot;entries&quot;</span><span class="p">,</span> <span class="s2">&quot;tags&quot;</span><span class="p">],</span>
+		<span class="s2">&quot;text&quot;</span><span class="p">:</span>\
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">{heading}</span>
+<span class="sd">*******************************************</span>
+
+<span class="sd">:Authors:    {authors}</span>
+<span class="sd">:created on: {datetime}</span>
+<span class="sd">:tags:       ``{tags}``</span>
+
+<span class="sd">Descrtipion</span>
+<span class="sd">===========</span>
+
+<span class="sd">{description}</span>
+
+<span class="sd">Entries</span>
+<span class="sd">=======</span>
+
+<span class="sd">{entries}</span>
+
+<span class="sd">&#39;&#39;&#39;</span><span class="p">,</span>
+		<span class="s2">&quot;entry_template&quot;</span><span class="p">:</span> <span class="n">default_entry_templates</span><span class="p">[</span><span class="s2">&quot;rst&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
+		<span class="s2">&quot;defaults&quot;</span><span class="p">:</span> <span class="p">{}</span>
+		<span class="p">})</span>
+
+<span class="p">}</span>
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">python3-journal 0.0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2017, Daniel Knüttel.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.6.
+    </div>
+  </body>
+</html>

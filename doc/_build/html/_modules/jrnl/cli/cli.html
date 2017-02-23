@@ -1,0 +1,348 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>jrnl.cli.cli &mdash; python3-journal 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/pydoctheme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../_static/sidebar.js"></script>
+    <link rel="top" title="python3-journal 0.0.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">python3-journal 0.0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for jrnl.cli.cli</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/python3</span>
+
+<span class="kn">from</span> <span class="nn">nuio.input.terminal</span> <span class="kn">import</span> <span class="n">POSIXTerminalInput</span>
+<span class="kn">from</span> <span class="nn">nuio.output.terminal</span> <span class="kn">import</span> <span class="n">TerminalOutput</span>
+<span class="kn">from</span> <span class="nn">..util.util</span> <span class="kn">import</span> <span class="n">open_closing</span>
+<span class="kn">from</span> <span class="nn">..system.system</span> <span class="kn">import</span> <span class="n">System</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">stat</span><span class="o">,</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">asyncio</span><span class="o">,</span> <span class="nn">aiofiles</span>
+<span class="kn">from</span> <span class="nn">.system</span> <span class="kn">import</span> <span class="n">create_journal</span><span class="p">,</span> <span class="n">lsj</span>
+<span class="kn">from</span> <span class="nn">.entry</span> <span class="kn">import</span> <span class="n">create_entry</span>
+<span class="kn">from</span> <span class="nn">.journal</span> <span class="kn">import</span> <span class="n">lse</span><span class="p">,</span> <span class="n">print_entry</span><span class="p">,</span> <span class="n">expand_archive</span>
+<span class="kn">from</span> <span class="nn">.convert</span> <span class="kn">import</span> <span class="n">convert</span>
+<span class="kn">from</span> <span class="nn">..model.entry</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A CLI (Command Line Interface) for the</span>
+<span class="sd">journal.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;0.0.1&quot;</span>
+
+<span class="n">default_prefs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;zip_journals&quot;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span> <span class="s2">&quot;archiving&quot;</span><span class="p">:</span> <span class="bp">False</span><span class="p">}</span>
+
+
+
+<div class="viewcode-block" id="make_init"><a class="viewcode-back" href="../../../jrnl.cli.html#jrnl.cli.cli.make_init">[docs]</a><span class="n">async</span> <span class="k">def</span> <span class="nf">make_init</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
+
+	<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;Welcome to python3-jrnl&quot;</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
+	<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;There seems to be no configuration of python3-jrnl in your account.</span><span class="se">\n</span><span class="s2">&quot;</span>
+		<span class="s2">&quot;This initializor will help you to use python3-jrnl async with comfort.&quot;</span><span class="p">)</span>
+	
+	<span class="n">cont</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_char</span><span class="p">(</span><span class="s2">&quot;continue? [N/y] &gt; &quot;</span><span class="p">)</span>
+	<span class="k">if</span><span class="p">(</span><span class="ow">not</span> <span class="n">cont</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">)):</span>
+		<span class="k">return</span> 
+
+	<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~/.jrnl&quot;</span><span class="p">))</span>
+
+	<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;If you have already set up this version of python3-jrnl enter &#39;c&#39;&quot;</span><span class="p">)</span>
+	
+	<span class="n">already_setup</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_char</span><span class="p">(</span><span class="s2">&quot;Use an existing installation [N/c] &gt; &quot;</span><span class="p">)</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">already_setup</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">)):</span>
+		<span class="n">path</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_string</span><span class="p">(</span><span class="s2">&quot;Enter the path of the installation &gt; &quot;</span><span class="p">)</span>
+		<span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+		<span class="n">async</span> <span class="k">with</span> <span class="n">aiofiles</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~/.jrnl/installation.info&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+			<span class="n">await</span> <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+			<span class="n">await</span> <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+		<span class="k">return</span> 
+
+	<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;You need to select the storage space for your journals.</span><span class="se">\n</span><span class="s2">&quot;</span>
+			<span class="s2">&quot;The default will be &#39;~/.jrnl/&#39;.&quot;</span><span class="p">)</span>
+	<span class="n">path</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_string</span><span class="p">(</span><span class="s2">&quot;Path to the storage space (empty for default) &gt; &quot;</span><span class="p">)</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+		<span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;~/.jrnl&quot;</span>
+	<span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+	<span class="k">if</span><span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">)):</span>
+		<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+	<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;The storage space has been created&quot;</span><span class="p">)</span>
+	<span class="c1">#</span>
+	<span class="c1"># XXX I do not know why but if I use aiofiles for this the write fails sometimes :-(</span>
+	<span class="c1">#</span>
+	<span class="n">async</span> <span class="k">with</span> <span class="n">aiofiles</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~/.jrnl/installation.info&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+		<span class="n">await</span> <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+		<span class="n">await</span> <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+	<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;Now you need to set your default preferences.&quot;</span><span class="p">)</span>
+	<span class="n">skip</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_char</span><span class="p">(</span><span class="s2">&quot;Skip and keep all default values [/c] &gt; &quot;</span><span class="p">)</span>
+	<span class="n">preferences</span> <span class="o">=</span> <span class="p">{}</span>
+	<span class="k">if</span><span class="p">(</span><span class="ow">not</span> <span class="n">skip</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">)):</span>
+		<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">default_prefs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+			<span class="n">value</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_type</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> 
+						<span class="n">prompt</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="s2">&quot; (default = {}) &gt; &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+			<span class="n">preferences</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="n">preferences</span> <span class="o">=</span> <span class="n">default_prefs</span>
+
+
+	<span class="n">system</span> <span class="o">=</span> <span class="n">System</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">preferences</span><span class="p">)</span>
+	<span class="n">system</span><span class="o">.</span><span class="n">dump</span><span class="p">()</span>
+	<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;The system has been created&quot;</span><span class="p">)</span>
+
+	<span class="n">executable</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_char</span><span class="p">(</span><span class="s2">&quot;Do you want to create an executable? [N/y] &gt; &quot;</span><span class="p">)</span>
+
+	<span class="k">if</span><span class="p">(</span><span class="n">executable</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">)):</span>
+		<span class="n">name</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_string</span><span class="p">(</span><span class="s2">&quot;Enter the name of the executable &gt; &quot;</span><span class="p">)</span>
+		
+		<span class="n">pythonpathext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">__file__</span><span class="p">)),</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="s2">&quot;..&quot;</span><span class="p">)</span>
+
+		<span class="n">async</span> <span class="k">with</span> <span class="n">aiofiles</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;~/.jrnl/&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+			<span class="k">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;~/.jrnl/&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)))</span>
+			<span class="n">await</span> <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;#!/bin/sh</span><span class="se">\n</span><span class="s2">export PYTHONPATH=$PYTHONPATH:{}</span><span class="se">\n\n</span><span class="s2">python3 -m jrnl.cli.cli</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pythonpathext</span><span class="p">))</span>
+			<span class="n">await</span> <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+		<span class="n">st</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;~/.jrnl/&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)))</span>
+		<span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;~/.jrnl/&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)),</span> <span class="n">st</span><span class="o">.</span><span class="n">st_mode</span> <span class="o">|</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_IEXEC</span><span class="p">)</span>
+
+		<span class="n">path_to_sh_rc</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_string</span><span class="p">(</span><span class="s2">&quot;Enter the path to your .shrc (empty to skip)(like ~/.bashrc) &gt; &quot;</span><span class="p">)</span>
+		<span class="k">if</span><span class="p">(</span><span class="n">path_to_sh_rc</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+			<span class="n">async</span> <span class="k">with</span> <span class="n">aiofiles</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">path_to_sh_rc</span><span class="p">),</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+				<span class="n">await</span> <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2"># binary for python3-jrnl</span><span class="se">\n</span><span class="s2">export PATH=$PATH:{}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;~/.jrnl/&quot;</span><span class="p">))</span>
+				<span class="n">await</span> <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+	<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;You should now be able to use python3-jrnl&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="mainloop"><a class="viewcode-back" href="../../../jrnl.cli.html#jrnl.cli.cli.mainloop">[docs]</a><span class="n">async</span> <span class="k">def</span> <span class="nf">mainloop</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">commands</span><span class="p">,</span> <span class="n">helps</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
+	<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;help or h for a quick helptext&quot;</span><span class="p">)</span>
+	<span class="n">helps</span><span class="p">[</span><span class="s2">&quot;quit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Quit the mainloop&quot;</span>
+	<span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
+		<span class="n">command</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_string</span><span class="p">(</span><span class="s2">&quot;jrnl &gt; &quot;</span><span class="p">)</span>
+		<span class="k">if</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+			<span class="k">continue</span>
+		<span class="k">if</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;quit&quot;</span><span class="p">):</span>
+			<span class="k">return</span>
+		<span class="k">if</span><span class="p">(</span><span class="ow">not</span> <span class="n">command</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">):</span>
+			<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;ERR: command not recognized:&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+			<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;help or h for a quick helptext&quot;</span><span class="p">)</span>
+			<span class="k">continue</span>
+		<span class="n">await</span> <span class="n">commands</span><span class="p">[</span><span class="n">command</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]](</span><span class="n">session</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]))</span></div>
+
+<div class="viewcode-block" id="save"><a class="viewcode-back" href="../../../jrnl.cli.html#jrnl.cli.cli.save">[docs]</a><span class="n">async</span> <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+	<span class="n">session</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dump</span><span class="p">()</span>
+	<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;Saved the system&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="select"><a class="viewcode-back" href="../../../jrnl.cli.html#jrnl.cli.cli.select">[docs]</a><span class="n">async</span> <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+	<span class="n">system</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span>
+	<span class="k">if</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+		<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;ERR: no id specified&quot;</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="nb">id</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="n">session</span><span class="p">[</span><span class="s2">&quot;current_journal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">open_journal</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+		<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;Opened journal&quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="n">session</span><span class="p">[</span><span class="s2">&quot;current_journal&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">heading</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
+	<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+		<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;ERR: &quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="help_create_entry"><a class="viewcode-back" href="../../../jrnl.cli.html#jrnl.cli.cli.help_create_entry">[docs]</a><span class="n">async</span> <span class="k">def</span> <span class="nf">help_create_entry</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+	<span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span><span class="se">\</span>
+<span class="s1">Creating a new entry is done in three steps:</span>
+
+<span class="s1">- Create the text</span>
+<span class="s1">  python3-journal will open $EDITOR (or vim) </span>
+<span class="s1">  and you will be able to enter the text you want to store.</span>
+<span class="s1">  You can link to children using the following formats:</span>
+
+<span class="s1">	- ``&quot;[&quot;&lt;heading&gt; &quot;|&quot; &lt;alttext&gt; &quot;|&quot; &lt;child_alias&gt; &quot;|&quot; &lt;child_type&gt;&quot;]&quot;`` (version 0.0.1)</span>
+<span class="s1">	- ``&quot;[!&quot;&lt;heading&gt; &quot;|&quot; &lt;alttext&gt; &quot;|&quot; &lt;child_alias&gt; &quot;|&quot; &lt;child_type&gt;&quot;]&quot;`` to force the child to be stored in the same file (version 0.0.1)</span>
+<span class="s1">	- ``&quot;[?&quot;&lt;heading&gt; &quot;|&quot; &lt;alttext&gt; &quot;|&quot; &lt;child_alias&gt; &quot;|&quot; &lt;child_type&gt;&quot;]&quot;`` to force the child to be stored external (version 0.0.1)</span>
+<span class="s1">	- ``&quot;[*&quot;&lt;heading&gt; &quot;|&quot; &lt;alttext&gt; &quot;|&quot; &lt;child_alias&gt; &quot;|&quot; &lt;child_type&gt;&quot;]&quot;`` just add a link to the child (version 0.0.1)</span>
+
+<span class="s1">  (Warning: currently the explicit storage/embedding markers are being ignored)</span>
+
+<span class="s1">  If you are done writing the text just save and close the file. (wq)</span>
+
+<span class="s1">- Enter the metadata</span>
+<span class="s1">  Like the date, author, heading and tags.</span>
+<span class="s1">  You can enter an empty datetime. This will use the current date and time.</span>
+
+<span class="s1">- Enter the children</span>
+<span class="s1">  Children are non-text ressources you might want to use,</span>
+<span class="s1">  like images, LaTeX or data.</span>
+<span class="s1">  Currently there are two types of children:</span>
+
+<span class="s1">	- filechild: to store files (dtype might be image/png or text/csv, ...) </span>
+<span class="s1">	- renderchild: to store rendered text (dtype might be text/latex)</span>
+
+<span class="s1">  Just enter the name of the child (the same as child_alias) and either filechild or renderchild to select the child type.</span>
+<span class="s1">  </span>
+<span class="s1">- To save the changes use the commands &quot;close&quot; and &quot;save&quot; (in this order).</span>
+
+<span class="s1">&#39;&#39;&#39;</span>
+	<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
+	
+<div class="viewcode-block" id="close"><a class="viewcode-back" href="../../../jrnl.cli.html#jrnl.cli.cli.close">[docs]</a><span class="n">async</span> <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+	<span class="k">if</span><span class="p">(</span><span class="ow">not</span> <span class="n">session</span><span class="p">[</span><span class="s2">&quot;current_journal&quot;</span><span class="p">]):</span>
+		<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;ERR: no open journal&quot;</span><span class="p">)</span>
+		<span class="k">return</span>
+	<span class="n">session</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">close_journal</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="s2">&quot;current_journal&quot;</span><span class="p">])</span>
+	<span class="n">session</span><span class="p">[</span><span class="s2">&quot;current_journal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+	<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;OK&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="inject"><a class="viewcode-back" href="../../../jrnl.cli.html#jrnl.cli.cli.inject">[docs]</a><span class="n">async</span> <span class="k">def</span> <span class="nf">inject</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+	<span class="n">cmd</span> <span class="o">=</span> <span class="n">await</span> <span class="n">inp</span><span class="o">.</span><span class="n">input_string</span><span class="p">(</span><span class="s2">&quot;command &gt; &quot;</span><span class="p">)</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="nb">eval</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+	<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+		<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;ERR:&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span></div>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+	<span class="n">out</span> <span class="o">=</span> <span class="n">TerminalOutput</span><span class="p">()</span>
+	<span class="n">inp</span> <span class="o">=</span> <span class="n">POSIXTerminalInput</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+	<span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+	<span class="k">if</span><span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~/.jrnl/installation.info&quot;</span><span class="p">))):</span>
+		<span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">make_init</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">))</span>
+
+	<span class="n">session</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;open_journals&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;current_journal&quot;</span><span class="p">:</span> <span class="bp">None</span><span class="p">}</span>
+	<span class="n">path</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~/.jrnl/installation.info&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+	<span class="n">dct</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;system.json&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+	<span class="n">session</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">dct</span><span class="p">)</span>
+	<span class="n">commands</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;create_journal&quot;</span><span class="p">:</span> <span class="n">create_journal</span><span class="p">,</span>
+		<span class="s2">&quot;help_create_entry&quot;</span><span class="p">:</span> <span class="n">help_create_entry</span><span class="p">,</span>
+		<span class="s2">&quot;create_entry&quot;</span><span class="p">:</span> <span class="n">create_entry</span><span class="p">,</span>
+		<span class="s2">&quot;print_entry&quot;</span><span class="p">:</span> <span class="n">print_entry</span><span class="p">,</span>
+		<span class="s2">&quot;expand_archive&quot;</span><span class="p">:</span> <span class="n">expand_archive</span><span class="p">,</span>
+		<span class="s2">&quot;select&quot;</span><span class="p">:</span> <span class="n">select</span><span class="p">,</span>
+		<span class="s2">&quot;convert&quot;</span><span class="p">:</span> <span class="n">convert</span><span class="p">,</span>
+		<span class="s2">&quot;close&quot;</span><span class="p">:</span> <span class="n">close</span><span class="p">,</span>
+		<span class="s2">&quot;save&quot;</span><span class="p">:</span> <span class="n">save</span><span class="p">,</span>
+		<span class="s2">&quot;lse&quot;</span><span class="p">:</span> <span class="n">lse</span><span class="p">,</span>
+		<span class="s2">&quot;inject&quot;</span><span class="p">:</span> <span class="n">inject</span><span class="p">,</span>
+		<span class="s2">&quot;lsj&quot;</span><span class="p">:</span> <span class="n">lsj</span>
+	<span class="p">}</span>
+	<span class="n">helps</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;help&quot;</span><span class="p">:</span> <span class="s2">&quot;Print this help text&quot;</span><span class="p">,</span>
+		<span class="s2">&quot;create_entry&quot;</span><span class="p">:</span> <span class="s2">&quot;Create a new Entry in the current journal&quot;</span><span class="p">,</span>
+		<span class="s2">&quot;help_create_entry&quot;</span><span class="p">:</span> <span class="s2">&quot;Help about the create_entry command&quot;</span><span class="p">,</span>
+		<span class="s2">&quot;print_entry&quot;</span><span class="p">:</span> <span class="s2">&quot;print_entry entryno {field}: print the entry&quot;</span><span class="p">,</span>
+		<span class="s2">&quot;expand_archive&quot;</span><span class="p">:</span> <span class="s2">&quot;expand_archive &lt;entryno&gt; enxpand the archive &lt;entryno&gt;&quot;</span><span class="p">,</span>
+		<span class="s2">&quot;lsj&quot;</span><span class="p">:</span> <span class="s2">&quot;lsj [headings|paths]: list the journals&quot;</span><span class="p">,</span>
+		<span class="s2">&quot;lse&quot;</span><span class="p">:</span> <span class="s2">&quot;lse [heading|datetime|description|tags]: list the entries&quot;</span><span class="p">,</span>
+		<span class="s2">&quot;save&quot;</span><span class="p">:</span> <span class="s2">&quot;Save the System&quot;</span><span class="p">,</span>
+		<span class="s2">&quot;select&quot;</span><span class="p">:</span> <span class="s2">&quot;Open a journal to use it&quot;</span><span class="p">,</span>
+		<span class="s2">&quot;close&quot;</span><span class="p">:</span> <span class="s2">&quot;Close the current journal&quot;</span><span class="p">,</span>
+		<span class="s2">&quot;convert&quot;</span><span class="p">:</span> <span class="s2">&quot;Convert the journal to a markup file&quot;</span><span class="p">,</span>
+		<span class="s2">&quot;inject&quot;</span><span class="p">:</span> <span class="s2">&quot;Eval one command. A hacky command for debugging.&quot;</span><span class="p">,</span>
+		<span class="s2">&quot;create_journal&quot;</span><span class="p">:</span> <span class="s2">&quot;Create a new journal&quot;</span>
+	<span class="p">}</span>
+	<span class="n">async</span> <span class="k">def</span> <span class="nf">help</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+		<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;Help for python3-journal&quot;</span><span class="p">)</span>
+		<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">helps</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+			<span class="n">out</span><span class="o">.</span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="s2">&quot;:</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+	<span class="n">commands</span><span class="p">[</span><span class="s2">&quot;help&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">help</span>
+	<span class="n">commands</span><span class="p">[</span><span class="s2">&quot;h&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">help</span>
+
+	<span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">mainloop</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">commands</span><span class="p">,</span> <span class="n">helps</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">))</span>
+	<span class="n">async</span> <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
+		<span class="n">system</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span>
+		<span class="n">session</span><span class="p">[</span><span class="s2">&quot;current_journal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">open_journal</span><span class="p">(</span><span class="s2">&quot;0&quot;</span><span class="p">)</span>
+		<span class="n">current_journal</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s2">&quot;current_journal&quot;</span><span class="p">]</span>
+		<span class="n">child1</span> <span class="o">=</span> <span class="n">FileChild</span><span class="p">(</span><span class="s2">&quot;/home/daniel/_DSC0031.JPG&quot;</span><span class="p">,</span> <span class="s2">&quot;image/jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;img01&quot;</span><span class="p">,</span> <span class="s2">&quot;Image 1&quot;</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+		<span class="n">child2</span> <span class="o">=</span> <span class="n">RenderChild</span><span class="p">(</span><span class="s2">&quot;x \in \mathbb{R}&quot;</span><span class="p">,</span> <span class="s2">&quot;text/latex&quot;</span><span class="p">,</span> <span class="s2">&quot;formula01&quot;</span><span class="p">,</span><span class="s2">&quot;x from real&quot;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+		<span class="n">entry</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span> <span class="s2">&quot;Test 3&quot;</span><span class="p">,</span> <span class="s2">&quot;[Image|An image|img01|image/jpg]</span><span class="se">\n</span><span class="s2">[Formula|A Fromula|formula01|text/latex]&quot;</span><span class="p">)</span>
+		<span class="n">entry</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">child1</span><span class="p">)</span>
+		<span class="n">entry</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">child2</span><span class="p">)</span>
+		<span class="n">current_journal</span><span class="o">.</span><span class="n">add_entry</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+		<span class="n">await</span> <span class="n">close</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+		<span class="n">await</span> <span class="n">save</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+
+<span class="c1">#	loop.run_until_complete(test(session, inp, out))</span>
+
+
+	<span class="n">loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">python3-journal 0.0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2017, Daniel Knüttel.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.6.
+    </div>
+  </body>
+</html>
