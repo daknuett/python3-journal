@@ -18,7 +18,7 @@ Work so far
 - Basic exporting to markup works
 
 TODOs
-=====
+-----
 
 - A search module
 - A non CLI interface
@@ -28,7 +28,7 @@ TODOs
 - Improve the CLI (autocomplete, history)
 
 FIXMEs
-======
+------
 
 - Trash unused archive files
 - Trash unused file copys (if store_internal is true)
@@ -117,7 +117,7 @@ Therefore all classes have a version string.
 
 
 Data Format
-===========
+-----------
 
 Usually the journal should be stored as JSON. 
 Other formats could be supported but are optional.
@@ -125,7 +125,7 @@ Other formats could be supported but are optional.
 All entries are stored within the journal storage file.
 
 The Entry
-=========
+---------
 
 The text links to the children using the following formats:
 
@@ -146,14 +146,14 @@ this entry. In this folder all external files are stored. Their name is the chil
 TODO: I still need to fix the children embedding stuff for ``jrnl.system.convert``.
 
 The Journal
-===========
+-----------
 
 Every journal has a storage file and, if any of the entries uses external files, 
 a directory with the files. The directory should be zip'ed, if the journal is inactive.
 
 
 The System
-==========
+----------
 
 The system is unique for every user. It contains a folder for every journal. 
 In this folder is the journal storage file and the optional directory.
@@ -170,7 +170,7 @@ to manage systems.
 
 
 The Archive
-===========
+-----------
 
 Usually archiving ( ``system.preferences["archiving"]`` ) should be turned off,
 but if you need it you can turn it on anyways.
