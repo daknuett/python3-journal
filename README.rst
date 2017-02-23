@@ -7,6 +7,8 @@ projects, experiments and trials.
 
 **Warning**: This project is currently UNIX only!
 
+.. contents:: Table of Contents
+
 Work so far
 ===========
 
