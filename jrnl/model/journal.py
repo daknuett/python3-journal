@@ -2,6 +2,8 @@
 
 import datetime
 from .entry import Entry
+from .archive import Archive
+import os
 
 class Journal(object):
 	version = "0.0.1"
@@ -52,7 +54,15 @@ class Journal(object):
 				dct["authors"], 
 				tags = dct["tags"],
 				need_storage = dct["need_storage"])
-		journal.entries = [Entry.from_dict(d) for d in dct["entries"]]
+		entries = []
+		# load entries and archived entries.
+		for entry in dct["entries"]:
+			if(entry["type"] == "archive"):
+				entries.append(Archive.from_dict(entry))
+			elif(entry["type"] == "entry"):
+				entries.append(Entry.from_dict(entry))
+			
+		journal.entries = entries
 		return journal
 
 
@@ -63,6 +73,20 @@ class Journal(object):
 		Returns: None
 		"""
 		self.entries.append(entry)
+	def extract_all_archives(self, path):
+		"""
+		This will extract all archived entries, assuming that they are
+		stored under ``path``. Then the journal will contain only entries.
+
+		This will remove all archive files.
+		"""
+		archives = [e for e in self.entries if isinstance(e, Archive)]
+		entries = [e for e in self.entries if not isinstance(e, Archive)]
+		for archive in archives:
+			archive.load(path)
+			os.remove(os.path.join(path, archive.relpath))
+			entries.extend(archive.entries)
+		self.entries = sorted(entries, key = lambda x: x.datetime)
 		
 	def get_entry(self, heading):
 		"""

@@ -106,7 +106,8 @@ class Child(object):
 		if(dct["type"] != "child" ):
 			if(not dct["type"] in Child.subclasstypes):
 				raise Exception("dictionary does not describe a child")
-			Child.subclasstypes[dct["type"]].from_dict(dct)
+			
+			return Child.subclasstypes[dct["type"]].from_dict(dct)
 		major, minor, release = dct["version"].split(".")
 		my_major, my_minor, my_release = Child.version.split(".")
 
@@ -128,10 +129,11 @@ class FileChild(Child):
 	If store_internal is True the content will be stored as a base64 encoded UTF-8
 	string.
 	"""
-	def __init__(self, filename, dtype, name, alttext, embed = True, store_internal = False):
+	def __init__(self, filename, dtype, name, alttext, embed = True, store_internal = False, content = None):
 		Child.__init__(self, name, alttext, embed)
 		self.filename = filename
 		self.dtype = dtype
+		self.content = content
 		self.store_internal = store_internal
 
 	def save(self, path):
@@ -143,15 +145,19 @@ class FileChild(Child):
 		path = os.path.join(path, real_filename)
 		if(path == self.filename):
 			return
-		with open_closing(path, "wb") as to:
+		if(not self.store_internal):
+			with open_closing(path, "wb") as to:
+				with open_closing(os.path.expanduser(self.filename), "rb") as from_:
+					chunk_size = 10 ** 3
+					done = False
+					while(not done):
+						chunk = from_.read(chunk_size)
+						if(chunk == b""):
+							done = True
+						to.write(chunk)
+		else:
 			with open_closing(os.path.expanduser(self.filename), "rb") as from_:
-				chunk_size = 10 ** 3
-				done = False
-				while(not done):
-					chunk = from_.read(chunk_size)
-					if(chunk == b""):
-						done = True
-					to.write(chunk)
+				self.content = base64.b64encode(from_.read()).decode("UTF-8")
 		self.filename = path
 		self.unsaved = False
 
@@ -159,12 +165,8 @@ class FileChild(Child):
 		d = Child.to_dict(self)
 		d.update({"type": "filechild", "dtype": self.dtype, 
 				"store_internal": self.store_internal,
-				"filename": self.filename})
-		if(self.store_internal):
-			f = open(self.filename, "rb")
-			inp = f.read()
-			f.close()
-			d.update({"content": base64.b64encode(inp).decode("UTF-8")})
+				"filename": self.filename,
+				"content": self.content})
 		return d
 	@staticmethod
 	def from_dict(dct):
@@ -186,12 +188,18 @@ class FileChild(Child):
 		if(version > my_version):
 			raise Exception("child version ({}) is too high. Current version: ({})".format(dct["version"], FileChild.version))
 
-		if(dct["store_internal"]):
+		if(dct["store_internal"] and dct["content"]):
 			f = open(dct["filename"], "wb")
-			f.write(base64.b64decode(dct["content"].encode("UTF-8")))
+			f.write(base64.b64decode(dct["content"].encode("utf-8")))
 			f.close()
 
-		return FileChild(dct["filename"], dct["dtype"], dct["name"], dct["alttext"], embed = dct["embed"])
+		return FileChild(dct["filename"], 
+				dct["dtype"], 
+				dct["name"], 
+				dct["alttext"], 
+				embed = dct["embed"], 
+				store_internal = dct["store_internal"],
+				content = dct["content"])
 
 class RenderChild(Child):
 	"""

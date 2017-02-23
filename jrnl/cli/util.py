@@ -1,4 +1,5 @@
 from ..model.entry import FileChild, RenderChild
+import os
 
 async def get_authors(inp, out):
 	out.print("Enter the authors (empty line to stop)")
@@ -45,6 +46,8 @@ async def get_children(inp, out):
 
 async def __get_filechild(inp, out, data):
 	data["filename"] = await inp.input_string(" filename > ")
+	while( not os.path.exists(os.path.expanduser(data["filename"]))):
+		data["filename"] = await inp.input_string(" filename [did not exist] > ")
 	data["dtype"] = await inp.input_string(" dtype > ")
 	data["alttext"] = await inp.input_string(" alttext > ")
 	data["embed"] = await inp.input_type(bool, " embed > ")

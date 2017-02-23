@@ -8,7 +8,7 @@ import os, stat, json
 import asyncio, aiofiles
 from .system import create_journal, lsj
 from .entry import create_entry
-from .journal import lse, print_entry
+from .journal import lse, print_entry, expand_archive
 from .convert import convert
 from ..model.entry import *
 
@@ -19,7 +19,7 @@ journal.
 
 version = "0.0.1"
 
-default_prefs = {"zip_journals": True}
+default_prefs = {"zip_journals": True, "archiving": False}
 
 
 
@@ -178,6 +178,13 @@ async def close(session, inp, out, *args):
 	session["current_journal"] = None
 	out.print("OK")
 
+async def inject(session, inp, out, *args):
+	cmd = await inp.input_string("command > ")
+	try:
+		eval(cmd)
+	except Exception as e:
+		out.print("ERR:", e)
+
 if __name__ == "__main__":
 	out = TerminalOutput()
 	inp = POSIXTerminalInput(out)
@@ -195,23 +202,27 @@ if __name__ == "__main__":
 		"help_create_entry": help_create_entry,
 		"create_entry": create_entry,
 		"print_entry": print_entry,
+		"expand_archive": expand_archive,
 		"select": select,
 		"convert": convert,
 		"close": close,
 		"save": save,
 		"lse": lse,
+		"inject": inject,
 		"lsj": lsj
 	}
 	helps = {"help": "Print this help text",
 		"create_entry": "Create a new Entry in the current journal",
 		"help_create_entry": "Help about the create_entry command",
 		"print_entry": "print_entry entryno {field}: print the entry",
+		"expand_archive": "expand_archive <entryno> enxpand the archive <entryno>",
 		"lsj": "lsj [headings|paths]: list the journals",
 		"lse": "lse [heading|datetime|description|tags]: list the entries",
 		"save": "Save the System",
 		"select": "Open a journal to use it",
 		"close": "Close the current journal",
 		"convert": "Convert the journal to a markup file",
+		"inject": "Eval one command. A hacky command for debugging.",
 		"create_journal": "Create a new journal"
 	}
 	async def help(session, inp, out, *args):

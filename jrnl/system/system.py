@@ -3,6 +3,7 @@
 import os, sys, json, datetime, shutil
 from ..model.journal import Journal
 from ..model.entry import Entry, Child
+from ..model.archive import Archive
 from zipfile import ZipFile
 from ..util.util import fs_compatible_name, open_closing
 
@@ -183,8 +184,31 @@ class System(object):
 						child.save(entry_path)
 				entry.has_unsaved = False
 
+		if("archiving" in self.preferences and self.preferences["archiving"]):
+			# archive the old&big entries
+			if(len(json.dumps(journal.to_dict())) > 5*10**3): 
+
+				# get lists of following entries
+				entry_sets = []
+				current_set = []
+				for entry in journal.entries:
+					if(isinstance(entry, Entry)):
+						current_set.append(entry)
+					else:
+						if(current_set == []):
+							continue
+						entry_sets.append(current_set)
+						current_set = []
+				if(current_set != []):
+					entry_sets.append(current_set)
+				archives = [Archive.from_entries(entries, journal_path) for entries in entry_sets]
+				archives.extend([e for e in journal.entries if isinstance(e, Archive)])
+				archives = sorted(archives, key = lambda x: x.dtime_start)
+				journal.entries = archives
+
+
 		
 		with open_closing(os.path.join(journal_path, statics["journal_file"]), "w") as journal_file:
-			json.dump(journal.to_dict(), journal_file)
+			json.dump(journal.to_dict(), journal_file, indent = "\t")
 		
 		
