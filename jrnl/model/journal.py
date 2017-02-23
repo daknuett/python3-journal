@@ -6,6 +6,10 @@ from .archive import Archive
 import os
 
 class Journal(object):
+	"""
+	The representation of a journal.
+	The attribute ``entries`` is a list of Entry and/or Archive objects.
+	"""
 	version = "0.0.1"
 	def __init__(self, heading, datetime, description, authors, tags = [], need_storage = False):
 		self.heading = heading
@@ -114,6 +118,7 @@ class Journal(object):
 		"""
 		Sets the entry with the given number to new_entry.
 		Will raise IndexError, if the number is not within the number of entries.
+		TODO: code this
 
 		Returns: None
 		"""
@@ -123,6 +128,7 @@ class Journal(object):
 		"""
 		Sets the entry with the given datetime dtime to new_entry
 		Will raise an Exception if there is no such entry.	
+		TODO: code this
 
 		Returns: None
 		"""

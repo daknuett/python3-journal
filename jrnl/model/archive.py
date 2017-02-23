@@ -11,6 +11,16 @@ from .entry import Entry
 from ..util.util import fs_compatible_name, open_closing
 
 class Archive(object):
+	"""
+	An archive that will
+
+	- reduce the size of the journal file
+	- reduce memory usage, if store_internal is True
+
+	The archive(s) will be generated automatically if the
+	system.preferences["archiving"] setting is true.
+	Default is false, because it is still kind of buggy.
+	"""
 	version = "0.0.1"
 	timefmt = "%d.%m.%Y-%H:%M:%S"
 	def __init__(self, relpath, dtime_start, dtime_stop, entries = []):
@@ -22,6 +32,11 @@ class Archive(object):
 		self.has_unsaved = False
 	@staticmethod
 	def from_entries(entries, path):
+		"""
+		Get the matching archive for the given list of entries.
+		path should be the same path where the journal file is stored.
+		The path will be used to store the archive.
+		"""
 		dtime_start = entries[0].datetime
 		dtime_stop = entries[-1].datetime
 		relpath = "archive-{}-{}.json".format(dtime_start.strftime(Archive.timefmt),
@@ -36,6 +51,15 @@ class Archive(object):
 			"dtime_start": self.dtime_start.strftime(Archive.timefmt),
 			"dtime_stop": self.dtime_stop.strftime(Archive.timefmt)}
 	def load(self, path):
+		"""
+		Load the entries from the archive file.
+		The archive file must be under the given path.
+		The path must not contain the archive file.
+		For instance::
+
+			path/to/journal/archive.json <- WRONG
+			path/to/journal/             <- RIGHT
+		"""
 		path = os.path.join(path, self.relpath)
 		with open(path) as f:
 			entries = json.load(f)
@@ -44,6 +68,14 @@ class Archive(object):
 		self.entries = entries
 
 	def save(self, path):
+		"""
+		Save the archive under the given path.
+		The path must not contain the archive file.
+		For instance::
+
+			path/to/journal/archive.json <- WRONG
+			path/to/journal/             <- RIGHT
+		"""
 		path = os.path.join(path, self.relpath)
 		with open(path, "w") as f:
 			json.dump([e.to_dict() for e in self.entries], f, indent = "\t")
