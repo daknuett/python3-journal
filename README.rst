@@ -39,7 +39,7 @@ Usage
 =====
 
 You are able to install python3-journaly by cloning 
-`<this repository> https://github.com/daknuett/python3-journal`_
+`this repository <https://github.com/daknuett/python3-journal>`_
 Go to the base directory and run ``python3 -m jrnl.cli.cli``.
 Then a installation helper will guide you through the installation process.
 python3-journaly will be installed locally.
